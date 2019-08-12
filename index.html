@@ -1,26 +1,21 @@
 <html>
   <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   </head>
   <body>
     
     <div class="container" id="derivation">
-      <h2>The derived word</h2>
-      <span class="badge mx-1"
-        v-for="(symbol,index) in d.current" 
-        v-bind:class="{'badge-primary': active(symbol), 'badge-secondary': !active(symbol)}"
-        v-bind:id="symbolID(index)"
-        :disabled="!active(symbol)" 
-        @click="active(symbol) ? beginreplace(index) : null"
-        >${symbol}</span>
-        
-      <div id="RuleOptions" v-if="replacing">
-        <h2>The list of rules you can use for symbol ${d.current[symboltoreplace]} at position ${symboltoreplace}</h2>
-        <button
-          v-for="rule in replaceoptions"
-          @click="finishreplace(rule)"
-        >${rule.lhs} → <span v-for="symbol in rule.rhs">${symbol}</span></button>
-      </div>
+      <h1>The derived word</h1>
+      <span v-for="(symbol,index) in d.current">
+        <span v-if="!nonterminal(symbol)" class="badge badge-secondary p-3">${symbol}</span>
+        <button v-if="nonterminal(symbol)" type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown">${symbol}</button>
+        <div class="dropdown-menu" v-if="nonterminal(symbol)">
+          <a class="dropdown-item" v-for="rule in d.grammar.getRules(symbol)" @click="replace(index,rule)"><span v-for="symbol in rule.rhs">${symbol}</span></a>
+        </div>
+      </span>
     </div>
 
 
@@ -47,26 +42,18 @@
             ],
             'S'
             )),
-          replacing: false,
-          symboltoreplace: "",
-          replaceoptions: []
+          toderive: ['id','*','(','id','+','id',')']
           
       },    
       computed: {
         meh() {return "meh"}
       },
       methods: {
-        active(symbol){return this.d.grammar.non_terminals.includes(symbol) && !this.replacing},
-        beginreplace(index){
-          this.replacing = true
-          this.symboltoreplace=index
-          this.replaceoptions=this.d.grammar.getRules(this.d.current[index])          
-        },
-        finishreplace(rule){
-          this.d.replace(this.symboltoreplace,rule)
-          this.replacing = false                   
-        },
-        symbolID(index){return 'symbol-'+index}
+        nonterminal(symbol){return this.d.grammar.non_terminals.includes(symbol)},
+        replace(index,rule){
+          this.d.replace(index,rule)
+          if(this.d.hasDerived(this.toderive)) alert("Congrats")
+        }
       }
     })
   </script>

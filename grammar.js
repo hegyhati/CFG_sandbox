@@ -26,6 +26,9 @@ class Derivation {
     if(rule.lhs == this.current[index]) 
       this.current = this.current.slice(0,index).concat(rule.rhs).concat(this.current.slice(index+1))
     else console.log("Replace not possible")
-  }  
+  }
+  hasDerived(word) {
+    return (JSON.stringify(word) === JSON.stringify(this.current))
+  } 
 }
 
