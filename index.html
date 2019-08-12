@@ -1,61 +1,58 @@
 <html>
+  
+  
   <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script> 
+    <script src="grammar.js"> </script>
+    <script src="examples.js"> </script>
+    <script src="https://unpkg.com/vue"></script>
   </head>
+  
+  
+  
   <body>
     
     <div class="container" id="derivation">
-      <h1>The derived word</h1>
+      <h1>Top-down derivation exercise</h1>
+      Try to derive the following word: <span v-for="symbol in toderive" class="badge badge-secondary m-1">${symbol}</span>
+      <hr />
       <span v-for="(symbol,index) in d.current">
         <span v-if="!nonterminal(symbol)" class="badge badge-secondary p-3">${symbol}</span>
         <button v-if="nonterminal(symbol)" type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown">${symbol}</button>
-        <div class="dropdown-menu" v-if="nonterminal(symbol)">
-          <a class="dropdown-item" v-for="rule in d.grammar.getRules(symbol)" @click="replace(index,rule)"><span v-for="symbol in rule.rhs">${symbol}</span></a>
+        <div v-if="nonterminal(symbol)" class="dropdown-menu">
+          <a class="dropdown-item" v-for="rule in getrules(symbol)" @click="replace(index,rule)"><span v-for="symbol in rule.rhs">${symbol}</span></a>
         </div>
       </span>
     </div>
 
 
 
-  <script src="https://unpkg.com/vue"></script>
-  <script src="grammar.js"> </script>
-  <script>
-    const app = new Vue({
-      el: '#derivation',
-      delimiters: ['${', '}'],
-      data: {          
-         d: new Derivation(new Grammar (
-            ['id','+','-','*','/','(',')'],
-            ['S','E','T'],
-            [
-              {'lhs':'S','rhs':['S','+','E']} , 
-              {'lhs':'S','rhs':['S','-','E']} , 
-              {'lhs':'S','rhs':['E']},
-              {'lhs':'E','rhs':['E','*','T']} , 
-              {'lhs':'E','rhs':['E','/','T']} , 
-              {'lhs':'E','rhs':['T']},
-              {'lhs':'T','rhs':['(','S',')']} , 
-              {'lhs':'T','rhs':['id']} 
-            ],
-            'S'
-            )),
-          toderive: ['id','*','(','id','+','id',')']
-          
-      },    
-      computed: {
-        meh() {return "meh"}
-      },
-      methods: {
-        nonterminal(symbol){return this.d.grammar.non_terminals.includes(symbol)},
-        replace(index,rule){
-          this.d.replace(index,rule)
-          if(this.d.hasDerived(this.toderive)) alert("Congrats")
+   
+    <script>
+      const app = new Vue({
+        el: '#derivation',
+        delimiters: ['${', '}'],
+        data: {          
+          d: new Derivation(AlgebraicExpersionGrammar()),
+          toderive: AlgebraicExpression1()          
+        },    
+        computed: {
+          meh() {return "meh"}
+        },
+        methods: {
+          getrules(symbol){return this.d.grammar.getRules(symbol)},
+          nonterminal(symbol){return this.d.grammar.non_terminals.includes(symbol)},
+          replace(index,rule){
+            this.d.replace(index,rule)
+            if(this.d.hasDerived(this.toderive)) alert("Congrats")
+          }
         }
-      }
-    })
-  </script>
+      })
+    </script>
+    
   </body>
+  
 </html>
