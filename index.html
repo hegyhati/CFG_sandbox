@@ -4,20 +4,21 @@
   </head>
   <body>
     
-    <div id="derivation">
+    <div class="container" id="derivation">
       <h2>The derived word</h2>
-      <button 
+      <span class="badge mx-1"
         v-for="(symbol,index) in d.current" 
+        v-bind:class="{'badge-primary': active(symbol), 'badge-secondary': !active(symbol)}"
         v-bind:id="symbolID(index)"
         :disabled="!active(symbol)" 
-        v-on:click="beginreplace(index)"
-        >${symbol}</button>
+        @click="active(symbol) ? beginreplace(index) : null"
+        >${symbol}</span>
         
       <div id="RuleOptions" v-if="replacing">
         <h2>The list of rules you can use for symbol ${d.current[symboltoreplace]} at position ${symboltoreplace}</h2>
         <button
           v-for="rule in replaceoptions"
-          v-on:click="finishreplace(rule)"
+          @click="finishreplace(rule)"
         >${rule.lhs} → <span v-for="symbol in rule.rhs">${symbol}</span></button>
       </div>
     </div>
@@ -32,12 +33,20 @@
       delimiters: ['${', '}'],
       data: {          
          d: new Derivation(new Grammar (
-            ['a','b'],
-            ['S'],
-            [{'lhs':'S','rhs':['a','S','b']} , {'lhs':'S','rhs':[]}],
+            ['id','+','-','*','/','(',')'],
+            ['S','E','T'],
+            [
+              {'lhs':'S','rhs':['S','+','E']} , 
+              {'lhs':'S','rhs':['S','-','E']} , 
+              {'lhs':'S','rhs':['E']},
+              {'lhs':'E','rhs':['E','*','T']} , 
+              {'lhs':'E','rhs':['E','/','T']} , 
+              {'lhs':'E','rhs':['T']},
+              {'lhs':'T','rhs':['(','S',')']} , 
+              {'lhs':'T','rhs':['id']} 
+            ],
             'S'
             )),
-          toderive: ['a','a','a','S','b','b','b'],
           replacing: false,
           symboltoreplace: "",
           replaceoptions: []
