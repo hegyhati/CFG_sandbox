@@ -16,16 +16,30 @@
   <body>
     
     <div class="container" id="derivation">
+      
       <h1>Top-down derivation exercise</h1>
-      Try to derive the following word: <span v-for="symbol in toderive" class="badge badge-secondary m-1">${symbol}</span>
-      <hr />
-      <span v-for="(symbol,index) in d.current">
-        <span v-if="!nonterminal(symbol)" class="badge badge-secondary p-3">${symbol}</span>
-        <button v-if="nonterminal(symbol)" type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown">${symbol}</button>
-        <div v-if="nonterminal(symbol)" class="dropdown-menu">
-          <a class="dropdown-item" v-for="rule in getrules(symbol)" @click="replace(index,rule)"><span v-for="symbol in rule.rhs">${symbol}</span></a>
-        </div>
-      </span>
+      <p>Try to derive the following word: <span v-for="symbol in toderive" class="badge badge-secondary m-1">${symbol}</span></p>
+      
+      <h4>Grammar</h4>
+      <p v-for="nt in nonterminals"><span class="badge badge-primary m-1">
+        ${nt}</span> → 
+        <span v-for="(rule,index) in getrules(nt)">
+          <span v-if="index!=0" class="mx-2">|</span>
+          <span v-for="symbol in rule.rhs" class="badge" v-bind:class="[nonterminal(symbol)?'badge-primary':'badge-secondary']">${symbol}</span>
+        </span>
+      </p>
+      
+      
+      <h4>Derivation</h4>
+      <div>
+        <span v-for="(symbol,index) in d.current">
+          <span v-if="!nonterminal(symbol)" class="badge badge-secondary p-3">${symbol}</span>
+          <button v-if="nonterminal(symbol)" type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown">${symbol}</button>
+          <div v-if="nonterminal(symbol)" class="dropdown-menu">
+            <a class="dropdown-item" v-for="rule in getrules(symbol)" @click="replace(index,rule)"><span v-for="symbol in rule.rhs">${symbol}</span></a>
+          </div>
+        </span>
+      </div>
     </div>
 
 
@@ -39,6 +53,9 @@
           d: new Derivation(AlgebraicExpersionGrammar()),
           toderive: AlgebraicExpression1()          
         }, 
+        computed: {
+          nonterminals(){return this.d.grammar.non_terminals}
+        },
         methods: {
           getrules(symbol){return this.d.grammar.getRules(symbol)},
           nonterminal(symbol){return this.d.grammar.non_terminals.includes(symbol)},
