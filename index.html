@@ -38,10 +38,7 @@
         data: {          
           d: new Derivation(AlgebraicExpersionGrammar()),
           toderive: AlgebraicExpression1()          
-        },    
-        computed: {
-          meh() {return "meh"}
-        },
+        }, 
         methods: {
           getrules(symbol){return this.d.grammar.getRules(symbol)},
           nonterminal(symbol){return this.d.grammar.non_terminals.includes(symbol)},
