@@ -33,7 +33,7 @@
       <h4>Derivation</h4>
       <div>
         <span v-for="(symbol,index) in d.current">
-          <span v-if="!nonterminal(symbol)" class="badge badge-secondary p-3">${symbol}</span>
+          <span v-if="!nonterminal(symbol)" class="badge p-3" v-bind:class="[ index >= terminalprefix ? 'badge-secondary' : (toderive[index]==symbol ? 'badge-success':'badge-danger')]">${symbol}</span>
           <button v-if="nonterminal(symbol)" type="button" class="btn dropdown-toggle btn-primary" data-toggle="dropdown">${symbol}</button>
           <div v-if="nonterminal(symbol)" class="dropdown-menu">
             <a class="dropdown-item" v-for="rule in getrules(symbol)" @click="replace(index,rule)"><span v-for="symbol in rule.rhs">${symbol}</span></a>
@@ -54,11 +54,12 @@
           toderive: AlgebraicExpression1()          
         }, 
         computed: {
-          nonterminals(){return this.d.grammar.non_terminals}
+          nonterminals(){return this.d.grammar.non_terminals},
+          terminalprefix(){return this.d.terminalPrefixLength()}
         },
         methods: {
           getrules(symbol){return this.d.grammar.getRules(symbol)},
-          nonterminal(symbol){return this.d.grammar.non_terminals.includes(symbol)},
+          nonterminal(symbol){return this.d.grammar.isNonterminal(symbol)},
           replace(index,rule){
             this.d.replace(index,rule)
             if(this.d.hasDerived(this.toderive)) alert("Congrats")

@@ -15,6 +15,7 @@ class Grammar {
   getRules(nonterminal) {
     return this.rules.filter(rule => rule.lhs == nonterminal)
   }
+  isNonterminal(symbol) {return this.non_terminals.includes(symbol)}
 }
 
 class Derivation {
@@ -29,6 +30,11 @@ class Derivation {
   }
   hasDerived(word) {
     return (JSON.stringify(word) === JSON.stringify(this.current))
-  } 
+  }
+  terminalPrefixLength(){
+    let i=0;
+    while(i < this.current.length && !this.grammar.isNonterminal(this.current[i])) i++;
+    return i;
+  }
 }
 
